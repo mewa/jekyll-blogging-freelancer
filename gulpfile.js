@@ -1,11 +1,12 @@
 var gulp = require('gulp');
-var less = require('gulp-less');
+var sass = require('gulp-sass');
 var browserSync = require('browser-sync').create();
 var header = require('gulp-header');
 var cleanCSS = require('gulp-clean-css');
 var rename = require("gulp-rename");
 var uglify = require('gulp-uglify');
 var filter = require('gulp-filter');
+var del = require('del');
 var pkg = require('./package.json');
 
 // Set the banner content
@@ -17,12 +18,10 @@ var banner = ['/*!\n',
     ''
 ].join('');
 
-// Compile LESS files from /less into /css
-gulp.task('less', function() {
-    var f = filter(['*', '!mixins.less', '!variables.less']);
-    return gulp.src('less/*.less')
-        .pipe(f)
-        .pipe(less())
+// Compile SASS files from /sass into /css
+gulp.task('sass', function() {
+    return gulp.src('sass/*.scss')
+        .pipe(sass().on('error', sass.logError))
         .pipe(header(banner, { pkg: pkg }))
         .pipe(gulp.dest('css'))
         .pipe(browserSync.reload({
@@ -31,7 +30,7 @@ gulp.task('less', function() {
 });
 
 // Minify compiled CSS
-gulp.task('minify-css', ['less'], function() {
+gulp.task('minify-css', ['sass'], function() {
     return gulp.src('css/freelancer.css')
         .pipe(cleanCSS({ compatibility: 'ie8' }))
         .pipe(rename({ suffix: '.min' }))
@@ -73,7 +72,7 @@ gulp.task('copy', function() {
 })
 
 // Run everything
-gulp.task('default', ['less', 'minify-css', 'minify-js', 'copy']);
+gulp.task('default', ['sass', 'minify-css', 'minify-js', 'copy']);
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {
@@ -85,11 +84,19 @@ gulp.task('browserSync', function() {
 })
 
 // Dev task with browserSync
-gulp.task('dev', ['browserSync', 'less', 'minify-css', 'minify-js'], function() {
-    gulp.watch('less/*.less', ['less']);
+gulp.task('dev', ['browserSync', 'sass', 'minify-css', 'minify-js'], function() {
+    gulp.watch('sass/*.scss', ['sass']);
     gulp.watch('css/*.css', ['minify-css']);
     gulp.watch('js/*.js', ['minify-js']);
     // Reloads the browser whenever HTML or JS files change
     gulp.watch('*.html', browserSync.reload);
     gulp.watch('js/**/*.js', browserSync.reload);
 });
+
+gulp.task('clean', [], function () {
+    del(["css", "vendor", "js/freelancer.min.js"]).then(paths => {
+        if (paths.length > 0) 
+            console.log('Removed:')
+        paths.forEach(function (v) { console.log("\t", v)})
+    });
+})
