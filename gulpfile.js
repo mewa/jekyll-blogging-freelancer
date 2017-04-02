@@ -69,7 +69,7 @@ gulp.task('minify-js', function() {
 });
 
 // Copy vendor libraries from /node_modules into /vendor
-gulp.task('copy', function() {
+gulp.task('copy', ['copy-html', 'copy-js', 'copy-res'], function() {
     gulp.src(['node_modules/bootstrap/dist/**/*', '!**/npm.js', '!**/bootstrap-theme.*', '!**/*.map'])
         .pipe(gulp.dest(VENDOR_OUT + '/bootstrap'))
 
@@ -85,13 +85,19 @@ gulp.task('copy', function() {
             '!node_modules/font-awesome/*.json'
         ])
         .pipe(gulp.dest(VENDOR_OUT + '/font-awesome'))
+})
 
+gulp.task('copy-html', () => {
     gulp.src(HTML_SRC + "/**/*.html")
         .pipe(gulp.dest(HTML_OUT));
+})
 
+gulp.task('copy-js', () => {
     gulp.src(JS_SRC + "/**/*.js")
         .pipe(gulp.dest(JS_OUT));
+})
 
+gulp.task('copy-res', () => {
     gulp.src(RES_DIR + "/**/*")
         .pipe(gulp.dest(OUT_DIR));
 })
@@ -117,14 +123,8 @@ gulp.task('dev', ['default', 'browserSync'], function () {
     gulp.watch([JS_OUT + '/**/*.js', "!" + JEKYLL_FILES], ['minify-js']);
     gulp.watch([RES_DIR + '/**/*', "!" + JEKYLL_FILES], ['copy']);
     // Reloads the browser whenever HTML or JS files change
-    gulp.watch([HTML_SRC + '/**/*.html', "!" + JEKYLL_FILES], function (f) {
-        gulp.src(f.path)
-            .pipe(gulp.dest(HTML_OUT))
-    });
-    gulp.watch([JS_SRC + '/**/*.js', "!" + JEKYLL_FILES], function (f) {
-        gulp.src(f.path)
-            .pipe(gulp.dest(JS_OUT))
-    });
+    gulp.watch([HTML_SRC + '/**/*.html', "!" + JEKYLL_FILES], ['copy-html']);
+    gulp.watch([JS_SRC + '/**/*.js', "!" + JEKYLL_FILES], ['copy-js']);
 
     gulp.watch(JEKYLL_FILES, (f) => {
         browserSync.reload(f);
