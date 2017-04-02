@@ -25,9 +25,9 @@ address_zip: 90201
 # Build settings
 markdown: kramdown
 
-source: "app"
+source: "intermediate"
 
-destination: "app/_site"
+destination: "jekyll"
 
 collections:
   portfolio:
