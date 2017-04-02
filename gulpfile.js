@@ -100,7 +100,7 @@ gulp.task('default', ['sass', 'minify-css', 'minify-js', 'copy']);
 // Configure the browserSync task
 gulp.task('browserSync', function() {
     browserSync.init({
-        server: OUT_DIR
+        server: OUT_DIR + "/_site"
     })
 })
 
@@ -109,6 +109,7 @@ gulp.task('dev', ['browserSync', 'sass', 'minify-css', 'minify-js'], function ()
     gulp.watch(SASS_SRC + '/**/*.scss', ['sass']);
     gulp.watch(CSS_OUT + '/**/*.css', ['minify-css']);
     gulp.watch(JS_OUT + '/**/*.js', ['minify-js']);
+    gulp.watch(RES_DIR + '/**/*', ['copy']);
     // Reloads the browser whenever HTML or JS files change
     gulp.watch(HTML_SRC + '/**/*.html', function (f) {
         gulp.src(f.path)
