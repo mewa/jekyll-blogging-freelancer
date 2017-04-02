@@ -2,8 +2,15 @@
 @import "mixins";
 
 body {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
 	font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	overflow-x: hidden;
+}
+
+main {
+	flex: 1;
 }
 
 p {
