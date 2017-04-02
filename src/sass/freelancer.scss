@@ -1,6 +1,10 @@
 @import "variables";
 @import "mixins";
 
+$blog-font: 'Rock Salt';
+$font-url: 'https://fonts.googleapis.com/css?family=' + $blog-font;
+@import url($font-url);
+
 body {
 	display: flex;
 	min-height: 100vh;
@@ -492,4 +496,10 @@ footer {
 
 div#maincontent{
 	outline: none;
+}
+
+.blog {
+    font-size: 1em;
+    font-family: $blog-font, cursive;
+    text-transform: none;
 }
