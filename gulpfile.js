@@ -7,6 +7,7 @@ var rename = require("gulp-rename");
 var uglify = require('gulp-uglify');
 var filter = require('gulp-filter');
 var del = require('del');
+var child = require('child_process');
 var pkg = require('./package.json');
 
 var SRC_DIR = "src";
@@ -38,9 +39,6 @@ gulp.task('sass', function() {
         .pipe(sass().on('error', sass.logError))
         .pipe(header(banner, { pkg: pkg }))
         .pipe(gulp.dest(CSS_OUT))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
 });
 
 // Minify compiled CSS
@@ -49,9 +47,6 @@ gulp.task('minify-css', ['sass'], function() {
         .pipe(cleanCSS({ compatibility: 'ie8' }))
         .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest(CSS_OUT))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
 });
 
 // Minify JS
@@ -61,9 +56,6 @@ gulp.task('minify-js', function() {
         .pipe(header(banner, { pkg: pkg }))
         .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest(JS_OUT))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
 });
 
 // Copy vendor libraries from /node_modules into /vendor
@@ -99,13 +91,17 @@ gulp.task('default', ['sass', 'minify-css', 'minify-js', 'copy']);
 
 // Configure the browserSync task
 gulp.task('browserSync', function() {
-    browserSync.init({
+    browserSync.init({ 
         server: OUT_DIR + "/_site"
     })
 })
 
+gulp.task('jekyll', function () {
+    var jekyll = child.execSync("jekyll build --incremental", { stdio: [0, 1, 2] })
+})
+
 // Dev task with browserSync
-gulp.task('dev', ['browserSync', 'sass', 'minify-css', 'minify-js'], function () {
+gulp.task('dev', ['default', 'browserSync'], function () {
     gulp.watch(SASS_SRC + '/**/*.scss', ['sass']);
     gulp.watch(CSS_OUT + '/**/*.css', ['minify-css']);
     gulp.watch(JS_OUT + '/**/*.js', ['minify-js']);
@@ -114,17 +110,17 @@ gulp.task('dev', ['browserSync', 'sass', 'minify-css', 'minify-js'], function ()
     gulp.watch(HTML_SRC + '/**/*.html', function (f) {
         gulp.src(f.path)
             .pipe(gulp.dest(HTML_OUT))
-            .pipe(browserSync.reload({
-                stream: true
-            }))
     });
     gulp.watch(JS_SRC + '/**/*.js', function (f) {
         gulp.src(f.path)
             .pipe(gulp.dest(JS_OUT))
-            .pipe(browserSync.reload({
-                stream: true
-            }))
     });
+
+    gulp.watch([OUT_DIR + "/_site/**/*"], (f) => {
+        console.log(f);
+        browserSync.reload(f);
+    })
+
 });
 
 gulp.task('clean', [], function () {
