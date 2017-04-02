@@ -24,6 +24,16 @@ var JS_OUT = OUT_DIR + "/js";
 var VENDOR_OUT = OUT_DIR + "/vendor";
 var RES_OUT = OUT_DIR + "/" + RES_DIR
 
+var JEKYLL_FILES = OUT_DIR + "/_site/**/*";
+
+// Add debounce to watch calls to ignore jekyll spam
+var old = gulp.watch;
+gulp.watch = function () {
+    arguments = Array.prototype.slice.call(arguments);
+    arguments.splice(1, 0, { debounceDelay: 150 });
+    old.apply(this, arguments)
+};
+
 // Set the banner content
 var banner = ['/*!\n',
     ' * Start Bootstrap - <%= pkg.title %> v<%= pkg.version %> (<%= pkg.homepage %>)\n',
@@ -102,25 +112,23 @@ gulp.task('jekyll', function () {
 
 // Dev task with browserSync
 gulp.task('dev', ['default', 'browserSync'], function () {
-    gulp.watch(SASS_SRC + '/**/*.scss', ['sass']);
-    gulp.watch(CSS_OUT + '/**/*.css', ['minify-css']);
-    gulp.watch(JS_OUT + '/**/*.js', ['minify-js']);
-    gulp.watch(RES_DIR + '/**/*', ['copy']);
+    gulp.watch([SASS_SRC + '/**/*.scss', "!" + JEKYLL_FILES], ['sass']);
+    gulp.watch([CSS_OUT + '/**/*.css', "!" + JEKYLL_FILES], ['minify-css']);
+    gulp.watch([JS_OUT + '/**/*.js', "!" + JEKYLL_FILES], ['minify-js']);
+    gulp.watch([RES_DIR + '/**/*', "!" + JEKYLL_FILES], ['copy']);
     // Reloads the browser whenever HTML or JS files change
-    gulp.watch(HTML_SRC + '/**/*.html', function (f) {
+    gulp.watch([HTML_SRC + '/**/*.html', "!" + JEKYLL_FILES], function (f) {
         gulp.src(f.path)
             .pipe(gulp.dest(HTML_OUT))
     });
-    gulp.watch(JS_SRC + '/**/*.js', function (f) {
+    gulp.watch([JS_SRC + '/**/*.js', "!" + JEKYLL_FILES], function (f) {
         gulp.src(f.path)
             .pipe(gulp.dest(JS_OUT))
     });
 
-    gulp.watch([OUT_DIR + "/_site/**/*"], (f) => {
-        console.log(f);
+    gulp.watch(JEKYLL_FILES, (f) => {
         browserSync.reload(f);
     })
-
 });
 
 gulp.task('clean', [], function () {
