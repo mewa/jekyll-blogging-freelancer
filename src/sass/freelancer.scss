@@ -551,3 +551,14 @@ div#maincontent{
     font-family: $blog-font, cursive;
     text-transform: none;
 }
+
+div.post-short {
+	margin-bottom: $blog-margin;
+	&:last-of-type {
+		margin-bottom: 0;
+	}
+
+	& a {
+		all: unset;
+	}
+}
