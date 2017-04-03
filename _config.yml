@@ -32,3 +32,5 @@ destination: "jekyll"
 collections:
   portfolio:
     output: true
+
+permalink: "blog/:slug"
