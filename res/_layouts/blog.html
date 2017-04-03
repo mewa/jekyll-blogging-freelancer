@@ -1,13 +1,19 @@
+{% assign post = site.posts[0] %}
+
 <!DOCTYPE html>
 <html>
 
   {% include head.html %}
 
   <body id="page-top" class="index">
-  <main>
+  <main class="content-margin">
     {% include navbar.html %}
 
-    <!--TODO: show latest post and navigation to older posts-->
+    <div class="container">
+      {% include blog_header.html %}
+
+      {{ post.content }}
+    </div>
   </main>
     {% include footer.html %}
 
