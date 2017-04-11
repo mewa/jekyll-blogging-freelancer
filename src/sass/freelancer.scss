@@ -1,9 +1,24 @@
 @import "variables";
 @import "mixins";
 
+$blog-font: 'Rock Salt';
+$font-url: 'https://fonts.googleapis.com/css?family=' + $blog-font;
+@import url($font-url);
+
 body {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
 	font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	overflow-x: hidden;
+}
+
+main {
+	flex: 1;
+
+	&.content-margin {
+		margin-bottom: 100px;
+	}
 }
 
 p {
@@ -71,14 +86,35 @@ hr.star-primary:after {
 	margin: 0 auto;
 }
 
+$blog-margin: 50px;
+
+#blog-intro {
+		padding-top: 25px;
+		padding-bottom: 25px;
+
+		.title {
+			display: block;
+			font-weight: 700;
+		}
+		.date {
+			display: block;
+		}
+	}
+
+main.content-margin {
+		margin-top: $blog-margin;
+		margin-bottom: $blog-margin;
+	}
+
 header {
 	text-align: center;
 	background: $theme-success;
 	color: white;
-	.container {
+	&#intro {
 		padding-top: 100px;
 		padding-bottom: 50px;
 	}
+
 	img {
 		display: block;
 		margin: 0 auto 20px;
@@ -99,11 +135,34 @@ header {
 }
 
 @media(min-width:768px) {
+	$blog-margin: 100px;
+	
+	#blog-intro {
+		padding-top: 40px;
+		padding-bottom:40px;
+
+		.title {
+			display: block;
+			font-weight: 700;
+			font-size: 3em;
+		}
+		.date {
+			display: block;
+			font-size: 1.1em;
+		}
+	}
+
+	main.content-margin {
+		margin-top: $blog-margin;
+		margin-bottom: $blog-margin;
+	}
+
 	header {
-		.container {
+		&#intro {
 			padding-top: 200px;
 			padding-bottom: 100px;
 		}
+
 		.intro-text {
 			.name {
 				font-size: 4.75em;
@@ -485,4 +544,21 @@ footer {
 
 div#maincontent{
 	outline: none;
+}
+
+.blog {
+    font-size: 1em;
+    font-family: $blog-font, cursive;
+    text-transform: none;
+}
+
+div.post-short {
+	margin-bottom: $blog-margin;
+	&:last-of-type {
+		margin-bottom: 0;
+	}
+
+	& a {
+		all: unset;
+	}
 }

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+  {% include head.html %}
+
+  <body id="page-top" class="index">
+  <main class="content-margin">
+    {% include navbar.html %}
+
+  <div class="container">
+      <div id="blog-intro">
+        <div class="blog-header-text">
+          <h1 class="title">Latest posts</h1>
+        </div>
+      </div>
+
+      {% for post in site.posts %}
+
+        {% include post_excerpt.html %}
+      
+      {% endfor %}
+    </div>
+  </main>
+    {% include footer.html %}
+
+    {% include modals.html %}
+
+    {% include javascript.html %}
+
+  </body>
+
+</html>

@@ -1,0 +1,8 @@
+<!-- Header -->
+{% assign post = site.posts[0] %}
+<div id="blog-intro">
+    <div class="blog-header-text">
+        <h1 class="title">{{ post.title }}</h1>
+        <h6 class="date">{{ post.date | date_to_string }}</h6>
+    </div>
+</div>
