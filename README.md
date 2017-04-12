@@ -1,27 +1,31 @@
-# [Start Bootstrap](http://startbootstrap.com/) - [Freelancer](http://startbootstrap.com/template-overviews/freelancer/)
+# Jekyll Blogging Freelancer
 
-[Freelancer](http://startbootstrap.com/template-overviews/freelancer/) is a one page freelancer portfolio theme for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/). This theme features several content sections, a responsive portfolio grid with hover effects, full page portfolio item modals, and a working PHP contact form.
+Blogging Freelancer is a fork of [Freelancer](https://github.com/BlackrockDigital/startbootstrap-freelancer), a theme by Start Bootstrap. Apart from the single page template it provides a blog section, that I felt was missing in the original template. Everything is prepared for content-publishing using Jekyll. 
 
-## Getting Started
+# Getting started
+This repository contains all the neccessary stuff to build a jekyll project from scratch.
 
-To begin using this template, choose one of the following options to get started:
-* [Download the latest release on Start Bootstrap](http://startbootstrap.com/template-overviews/freelancer/)
-* Clone the repo: `git clone https://github.com/BlackrockDigital/startbootstrap-freelancer.git`
-* Fork the repo
+First off clone or fork this repository using 
+`git clone https://github.com/mewa/jekyll-blogging-freelancer.git`
 
-## Bugs and Issues
+### Setup required gems
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/BlackrockDigital/startbootstrap-freelancer/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](http://startbootstrap.com/template-overviews/freelancer/).
+`bundle install`
 
-## Creator
+### Install dependencies
 
-Start Bootstrap was created by and is maintained by **[David Miller](http://davidmiller.io/)**, Owner of [Blackrock Digital](http://blackrockdigital.io/).
+`npm install`
 
-* https://twitter.com/davidmillerskt
-* https://github.com/davidtmiller
+### Build template
 
-Start Bootstrap is based on the [Bootstrap](http://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
+`gulp`
 
-## Copyright and License
+or get a live preview during development
 
-Copyright 2013-2016 Blackrock Digital LLC. Code released under the [MIT](https://github.com/BlackrockDigital/startbootstrap-freelancer/blob/gh-pages/LICENSE) license.
+`gulp dev`
+
+# Customization
+
+Sass sources are under `src/sass` directory.
+
+Jekyll resources such as posts or portfolio items are under `res` in their respective directories.

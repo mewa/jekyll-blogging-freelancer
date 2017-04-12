@@ -7,11 +7,14 @@ var rename = require("gulp-rename");
 var uglify = require('gulp-uglify');
 var filter = require('gulp-filter');
 var del = require('del');
+var child = require('child_process');
+var runSequence = require('run-sequence');
+var merge = require('merge-stream');
 var pkg = require('./package.json');
 
 var SRC_DIR = "src";
 var RES_DIR = "res";
-var OUT_DIR = "app";
+var OUT_DIR = "intermediate";
 
 var HTML_SRC = SRC_DIR + "/html";
 var SASS_SRC = SRC_DIR + "/sass";
@@ -22,6 +25,17 @@ var CSS_OUT = OUT_DIR + "/css";
 var JS_OUT = OUT_DIR + "/js";
 var VENDOR_OUT = OUT_DIR + "/vendor";
 var RES_OUT = OUT_DIR + "/" + RES_DIR
+
+var JEKYLL_DIR = "jekyll";
+var JEKYLL_FILES = JEKYLL_DIR + "/**/*";
+
+// Add debounce to watch calls to ignore jekyll spam
+// var old = gulp.watch;
+// gulp.watch = function () {
+//     arguments = Array.prototype.slice.call(arguments);
+//     arguments.splice(1, 0, { debounceDelay: 150 });
+//     old.apply(this, arguments)
+// };
 
 // Set the banner content
 var banner = ['/*!\n',
@@ -38,43 +52,36 @@ gulp.task('sass', function() {
         .pipe(sass().on('error', sass.logError))
         .pipe(header(banner, { pkg: pkg }))
         .pipe(gulp.dest(CSS_OUT))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
 });
 
 // Minify compiled CSS
 gulp.task('minify-css', ['sass'], function() {
-    return gulp.src(CSS_OUT + '/freelancer.css')
+    var f = filter([CSS_OUT + '/**/*.css', "!" + CSS_OUT + '/**/*.min.css'])
+    return gulp.src(CSS_OUT + '/**/*.css')
+        .pipe(f)
         .pipe(cleanCSS({ compatibility: 'ie8' }))
         .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest(CSS_OUT))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
 });
 
 // Minify JS
 gulp.task('minify-js', function() {
-    return gulp.src(JS_SRC + '/freelancer.js')
+    return gulp.src(JS_SRC + '/**/*.js')
         .pipe(uglify())
         .pipe(header(banner, { pkg: pkg }))
         .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest(JS_OUT))
-        .pipe(browserSync.reload({
-            stream: true
-        }))
 });
 
 // Copy vendor libraries from /node_modules into /vendor
-gulp.task('copy', function() {
-    gulp.src(['node_modules/bootstrap/dist/**/*', '!**/npm.js', '!**/bootstrap-theme.*', '!**/*.map'])
+gulp.task('copy-vendor', () => {
+    var bootstrap = gulp.src(['node_modules/bootstrap/dist/**/*', '!**/npm.js', '!**/bootstrap-theme.*', '!**/*.map'])
         .pipe(gulp.dest(VENDOR_OUT + '/bootstrap'))
 
-    gulp.src(['node_modules/jquery/dist/jquery.js', 'node_modules/jquery/dist/jquery.min.js'])
+    var jq = gulp.src(['node_modules/jquery/dist/jquery.js', 'node_modules/jquery/dist/jquery.min.js'])
         .pipe(gulp.dest(VENDOR_OUT + '/jquery'))
 
-    gulp.src([
+    var awesome = gulp.src([
             'node_modules/font-awesome/**',
             '!node_modules/font-awesome/**/*.map',
             '!node_modules/font-awesome/.npmignore',
@@ -84,52 +91,66 @@ gulp.task('copy', function() {
         ])
         .pipe(gulp.dest(VENDOR_OUT + '/font-awesome'))
 
-    gulp.src(HTML_SRC + "/**/*.html")
+    return merge(bootstrap, jq, awesome);
+})
+
+gulp.task('copy', ['copy-vendor', 'copy-html', 'copy-js', 'copy-res'])
+
+gulp.task('copy-html', () => {
+    return gulp.src(HTML_SRC + "/**/*.html")
         .pipe(gulp.dest(HTML_OUT));
+})
 
-    gulp.src(JS_SRC + "/**/*.js")
+gulp.task('copy-js', () => {
+    return gulp.src(JS_SRC + "/**/*.js")
         .pipe(gulp.dest(JS_OUT));
+})
 
-    gulp.src(RES_DIR + "/**/*")
+gulp.task('copy-res', () => {
+    return gulp.src(RES_DIR + "/**/*")
         .pipe(gulp.dest(OUT_DIR));
 })
 
+// Build intermediate app sources
+gulp.task('build-app', ['sass', 'minify-css', 'minify-js', 'copy'])
+
 // Run everything
-gulp.task('default', ['sass', 'minify-css', 'minify-js', 'copy']);
+gulp.task('default', ['build-app', 'build-jekyll']);
 
 // Configure the browserSync task
-gulp.task('browserSync', function() {
-    browserSync.init({
-        server: OUT_DIR
+gulp.task('browserSync', ['default'], function() {
+    browserSync.init({ 
+        server: JEKYLL_DIR,
+        port: 4000
     })
 })
 
+// Update Jekyll
+gulp.task('jekyll', function () {
+    var jekyll = child.execSync("jekyll build --incremental", { stdio: [0, 1, 2] })
+})
+
+// Build Jekyll from scratch
+gulp.task('build-jekyll', ['build-app'], function () {
+    return gulp.start('jekyll');
+})
+
 // Dev task with browserSync
-gulp.task('dev', ['browserSync', 'sass', 'minify-css', 'minify-js'], function () {
-    gulp.watch(SASS_SRC + '/**/*.scss', ['sass']);
-    gulp.watch(CSS_OUT + '/**/*.css', ['minify-css']);
-    gulp.watch(JS_OUT + '/**/*.js', ['minify-js']);
+gulp.task('dev', ['default', 'browserSync'], function () {
+    gulp.watch([SASS_SRC + '/**/*.scss', "!" + JEKYLL_FILES], () => runSequence.apply(this, ['sass', 'minify-css', 'jekyll']));
+    gulp.watch([RES_DIR + '/**/*', "!" + JEKYLL_FILES], () => runSequence.apply(this, ['copy', 'jekyll']));
     // Reloads the browser whenever HTML or JS files change
-    gulp.watch(HTML_SRC + '/**/*.html', function (f) {
-        gulp.src(f.path)
-            .pipe(gulp.dest(HTML_OUT))
-            .pipe(browserSync.reload({
-                stream: true
-            }))
-    });
-    gulp.watch(JS_SRC + '/**/*.js', function (f) {
-        gulp.src(f.path)
-            .pipe(gulp.dest(JS_OUT))
-            .pipe(browserSync.reload({
-                stream: true
-            }))
-    });
+    gulp.watch([HTML_SRC + '/**/*.html', "!" + JEKYLL_FILES], () => runSequence.apply(this, ['copy-html', 'jekyll']));
+    gulp.watch([JS_SRC + '/**/*.js', "!" + JEKYLL_FILES], () => runSequence.apply(this, ['copy-js', 'minify-js', 'jekyll']));
+
+    gulp.watch(JEKYLL_FILES, (f) => {
+        browserSync.reload();
+    })
 });
 
 gulp.task('clean', [], function () {
-    del([OUT_DIR + "/**/*"]).then(paths => {
-        if (paths.length > 0) 
-            console.log('Removed:')
-        paths.forEach(function (v) { console.log("\t", v)})
+    return del([OUT_DIR + "/**/*", JEKYLL_FILES]).then(paths => {
+        if (paths.length > 0)
+            console.log('Removed ' + paths.length + ' files');
     });
 })
