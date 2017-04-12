@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mewa/jekyll-blogging-freelancer.svg?branch=master)](https://travis-ci.org/mewa/jekyll-blogging-freelancer)
+
 # Jekyll Blogging Freelancer
 
 Blogging Freelancer is a fork of [Freelancer](https://github.com/BlackrockDigital/startbootstrap-freelancer), a theme by Start Bootstrap. Apart from the single page template it provides a blog section, that I felt was missing in the original template. Everything is prepared for content-publishing using Jekyll. 
