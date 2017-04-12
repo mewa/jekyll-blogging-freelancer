@@ -565,8 +565,9 @@ div.post-short {
 
 div.pagination {
 	float: right;
-	&::after {
+	&::after, &::before {
 		content: ' ';
+		white-space: pre;
 		clear: both;
 	}
 	& span::before, & span::after {
