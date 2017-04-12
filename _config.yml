@@ -31,7 +31,7 @@ destination: "jekyll"
 
 collections:
   portfolio:
-    output: true
+    output: false
 
 gems: 
   - jekyll-paginate

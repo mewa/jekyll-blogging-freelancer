@@ -1,5 +1,5 @@
-{% for post in site.posts %}
-<div class="portfolio-modal modal fade" id="{{ post.modalID }}" tabindex="-1" role="dialog" aria-hidden="true">
+{% for item in site.portfolio %}
+<div class="portfolio-modal modal fade" id="{{ item.modalID }}" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-content">
         <div class="close-modal" data-dismiss="modal">
             <div class="lr">
@@ -11,17 +11,17 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2">
                     <div class="modal-body">
-                        <h2>{{ post.title }}</h2>
+                        <h2>{{ item.title }}</h2>
                         <hr class="star-primary">
-                        <img src="{{ site.baseurl }}/{{ post.img }}" class="img-responsive img-centered" alt="">
-                        {{ post.content }}
+                        <img src="{{ site.baseurl }}/{{ item.img }}" class="img-responsive img-centered" alt="Portfolio item: {{ item.title }}">
+                        {{ item.content }}
                         <ul class="list-inline item-details">
                             <li>Category:
-                                <strong>{{ post.category }}
+                                <strong>{{ item.category }}
                                     </strong>
                             </li>
                             <li>Date:
-                                <strong>{{ post.date | date: "%B %Y" }}
+                                <strong>{{ item.date | date: "%B %Y" }}
                                     </strong>
                             </li>
                         </ul>
