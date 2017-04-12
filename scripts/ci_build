@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+gulp build-app
+BASE_URL=$(cat _config.yml | grep -e "^baseurl:" | cut -d ' ' -f 2)
+bundle exec jekyll build -d $BASE_URL
+bundle exec htmlproofer jekyll

@@ -10,12 +10,13 @@ install:
   - bundle install
   - npm install
 
-script:
-  - gulp
-  - bundle exec htmlproofer jekyll
+script: 
+  - chmod u+x scripts/ci_build
+  - scripts/ci_build
 
 after_success:
   - cat _config.yml | grep -ve 'source:\|destination:' > intermediate/_config.yml
+
 
 env:
   global:
