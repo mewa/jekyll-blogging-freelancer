@@ -33,7 +33,9 @@ collections:
   portfolio:
     output: true
 
-gems: [jekyll-paginate]
+gems: 
+  - jekyll-paginate
+  - jekyll-feed
 
 permalink: "blog/:year/:slug/"
 paginate: 5
