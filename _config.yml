@@ -35,6 +35,6 @@ collections:
 
 gems: [jekyll-paginate]
 
-permalink: "blog/:slug/"
+permalink: "blog/:year/:slug/"
 paginate: 5
 paginate_path: "/blog/posts/page:num/"

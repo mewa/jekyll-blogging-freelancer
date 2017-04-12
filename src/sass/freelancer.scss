@@ -562,3 +562,15 @@ div.post-short {
 		all: unset;
 	}
 }
+
+div.pagination {
+	float: right;
+	&::after {
+		content: ' ';
+		clear: both;
+	}
+	& span::before, & span::after {
+		white-space: pre;
+		content: '    ';
+	}
+}

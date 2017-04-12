@@ -13,12 +13,15 @@
           <h1 class="title">Latest posts</h1>
         </div>
       </div>
+      {% include blog_pagination.html %}
 
       {% for post in paginator.posts %}
 
         {% include post_excerpt.html %}
       
       {% endfor %}
+
+      {% include blog_pagination.html %}
     </div>
   </main>
     {% include footer.html %}
