@@ -33,4 +33,8 @@ collections:
   portfolio:
     output: true
 
+gems: [jekyll-paginate]
+
 permalink: "blog/:slug"
+paginate: 5
+paginate_path: "/blog/posts/page:num/"

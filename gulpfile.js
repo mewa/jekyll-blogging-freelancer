@@ -118,9 +118,10 @@ gulp.task('build-app', ['sass', 'minify-css', 'minify-js', 'copy'])
 gulp.task('default', ['build-app', 'build-jekyll']);
 
 // Configure the browserSync task
-gulp.task('browserSync', function() {
+gulp.task('browserSync', ['default'], function() {
     browserSync.init({ 
-        server: JEKYLL_DIR
+        server: JEKYLL_DIR,
+        port: 4000
     })
 })
 
